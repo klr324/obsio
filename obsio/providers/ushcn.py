@@ -149,44 +149,44 @@ class UshcnObsIO(ObsIO):
                                            _ELEMS_TO_USHCN_VNAME[elem]))
         
         # klr 6/3/2022: checking if file exists
-        obs_file = self._obs_tarfiles[elem]
-        if fname in obs_file.getnames():
-            obs_file = self._obs_tarfiles[elem].extractfile(fname)
+        #obs_file = self._obs_tarfiles[elem]
+        if fname not in self._obs_tarfiles[elem].getnames():
+            print(fname, 'does not exist')
         else:
-            print(fname, 'does not exist')  
+            obs_file = self._obs_tarfiles[elem].extractfile(fname)
 
-        obs = pd.read_fwf(StringIO(obs_file.read().decode('utf-8')),
-                          colspecs=[(12, 16), (17, 17 + 5), (26, 26 + 5),
-                                    (35, 35 + 5), (44, 44 + 5), (53, 53 + 5),
-                                    (62, 62 + 5), (71, 71 + 5), (80, 80 + 5),
-                                    (89, 89 + 5), (98, 98 + 5), (107, 107 + 5),
-                                    (116, 116 + 5)], header=None, index_col=0,
-                          names=['year'] + ['%.2d' % mth for
-                                            mth in np.arange(1, 13)],
-                          na_values='-9999')
+            obs = pd.read_fwf(StringIO(obs_file.read().decode('utf-8')),
+                              colspecs=[(12, 16), (17, 17 + 5), (26, 26 + 5),
+                                        (35, 35 + 5), (44, 44 + 5), (53, 53 + 5),
+                                        (62, 62 + 5), (71, 71 + 5), (80, 80 + 5),
+                                        (89, 89 + 5), (98, 98 + 5), (107, 107 + 5),
+                                        (116, 116 + 5)], header=None, index_col=0,
+                              names=['year'] + ['%.2d' % mth for
+                                                mth in np.arange(1, 13)],
+                              na_values='-9999')
 
-        obs_file.close()
+            obs_file.close()
 
-        obs = obs.unstack().swaplevel(0, 1).sortlevel(0, sort_remaining=True)
-        obs = obs.reset_index()
-        obs['time'] = pd.to_datetime(obs.year.astype(np.str) + obs.level_1,
-                                     format='%Y%m')
+            obs = obs.unstack().swaplevel(0, 1).sortlevel(0, sort_remaining=True)
+            obs = obs.reset_index()
+            obs['time'] = pd.to_datetime(obs.year.astype(np.str) + obs.level_1,
+                                         format='%Y%m')
 
-        obs.drop(['year', 'level_1'], axis=1, inplace=True)
-        obs.rename(columns={0: 'obs_value'}, inplace=True)
-        obs.dropna(axis=0, subset=['obs_value'], inplace=True)
+            obs.drop(['year', 'level_1'], axis=1, inplace=True)
+            obs.rename(columns={0: 'obs_value'}, inplace=True)
+            obs.dropna(axis=0, subset=['obs_value'], inplace=True)
 
-        if self.has_start_end_dates:
+            if self.has_start_end_dates:
 
-            mask_time = ((obs.time >= self.start_date) &
-                         (obs.time <= self.end_date))
-            obs.drop(obs[~mask_time].index, axis=0, inplace=True)
+                mask_time = ((obs.time >= self.start_date) &
+                             (obs.time <= self.end_date))
+                obs.drop(obs[~mask_time].index, axis=0, inplace=True)
 
-        obs['obs_value'] = _ELEMS_CONVERT_FUNCT[elem](obs['obs_value'])
-        obs['station_id'] = stn_id
-        obs['elem'] = elem
+            obs['obs_value'] = _ELEMS_CONVERT_FUNCT[elem](obs['obs_value'])
+            obs['station_id'] = stn_id
+            obs['elem'] = elem
 
-        return obs
+            return obs
 
     def _read_obs(self, stns_ids=None):
 
