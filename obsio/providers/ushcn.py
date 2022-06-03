@@ -147,7 +147,13 @@ class UshcnObsIO(ObsIO):
         fname = os.path.join('.', self._obs_prefix_dirs[elem],
                              '%s.%s.%s' % (stn_id, _ELEMS_TO_USHCN_DATASET[elem],
                                            _ELEMS_TO_USHCN_VNAME[elem]))
-        obs_file = self._obs_tarfiles[elem].extractfile(fname)
+        
+        # klr 6/3/2022: checking if file exists
+        obs_file = self._obs_tarfiles[elem]
+        if fname in obs_file.getnames():
+            obs_file = self._obs_tarfiles[elem].extractfile(fname)
+        else:
+            print(fname, 'does not exist')  
 
         obs = pd.read_fwf(StringIO(obs_file.read().decode('utf-8')),
                           colspecs=[(12, 16), (17, 17 + 5), (26, 26 + 5),
