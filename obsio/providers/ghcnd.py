@@ -213,6 +213,8 @@ def _build_tobs_hdfs(path_out, fpaths_yrly, elems, nprocs=1):
     nprocs = nprocs if fpaths_yrly.size >= nprocs else fpaths_yrly.size
         
     stn_nums = pd.DataFrame([(np.nan, np.nan)], columns=['station_id', 'station_num'])
+    #klr 10/19/2022: np.nan is float. Convert station_id to string for merging in def write_data
+    stn_nums['station_id']=stn_nums['station_id'].astype(str)
     num_inc = 0 
     
     first_append = {elem:True for elem in elems}
