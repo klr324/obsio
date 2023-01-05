@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='obsio',
-      version='0.1',
+      version='0.2',
       packages=find_packages(),
       description='Climate and weather observation IO',
       long_description=('obsio is Python package that provides a consistent generic '
