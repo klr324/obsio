@@ -60,8 +60,11 @@ class NcObsIO(ObsIO):
             
         obs = pd.concat(obs)
         
+        # klr 1/5/2023: sortlevel depreciated. Use sort_index
+        #obs = obs.reorder_levels(['station_id', 'elem',
+        #                          'time']).sortlevel(0, sort_remaining=True)
         obs = obs.reorder_levels(['station_id', 'elem',
-                                  'time']).sortlevel(0, sort_remaining=True)
+                                  'time']).sort_index(0, sort_remaining=True)
         
         return obs
     

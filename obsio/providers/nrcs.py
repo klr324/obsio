@@ -740,7 +740,9 @@ class NrcsObsIO(ObsIO):
 
         obs_merge = obs_merge.drop('stationTriplet', axis=1)
         obs_merge = obs_merge.set_index(['station_id', 'elem', 'time'])
-        obs_merge = obs_merge.sortlevel(0, sort_remaining=True)
+        # klr 1/5/2023: sortlevel depreciated. Use sort_index
+        #obs_merge = obs_merge.sortlevel(0, sort_remaining=True)
+        obs_merge = obs_merge.sort_index(0, sort_remaining=True)
         return obs_merge
 
     def _stationMetadata_to_tuple(self, a_meta):

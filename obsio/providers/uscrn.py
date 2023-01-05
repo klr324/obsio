@@ -102,6 +102,8 @@ class UscrnObsIO(ObsIO):
              
         obs_all = pd.concat(obs_all, ignore_index=True)
         obs_all = obs_all.set_index(['station_id', 'elem', 'time'])
-        obs_all = obs_all.sortlevel(0, sort_remaining=True)
+        # klr 1/5/2023: sortlevel depreciated. Use sort_index
+        #obs_all = obs_all.sortlevel(0, sort_remaining=True)
+        obs_all = obs_all.sort_index(0, sort_remaining=True)
 
         return obs_all
