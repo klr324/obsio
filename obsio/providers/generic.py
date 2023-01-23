@@ -177,7 +177,10 @@ class ObsIO(object):
                 stns = self.stns.loc[stn_ids]
             
             #include station metadata
-            obs.merge(xr.Dataset.from_dataframe(stns), inplace=True)
+            # klr 1/11/2023: There is no inplace parameter for pandas merge
+            # Default merge is "inner": Include all items that both DataFrames share
+            #obs.merge(xr.Dataset.from_dataframe(stns), inplace=True)
+            obs.merge(xr.Dataset.from_dataframe(stns))
             
             return obs
         
